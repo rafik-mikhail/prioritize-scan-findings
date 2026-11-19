@@ -1,6 +1,6 @@
 # Prioritize scan findings — evaluation guide
 
-Version under test: `1.0.0`. Use fixture groups and clusters with fixed, recorded threat data (do not query live feeds during evaluation, so results are repeatable). Pre-register the expected outcome and the deciding signals.
+Version under test: `1.1.0`. Use fixture groups and clusters with fixed, recorded threat data (do not query live feeds during evaluation, so results are repeatable). Pre-register the expected outcome and the deciding signals.
 
 | Fixture | Expected behavior |
 |---|---|
@@ -13,6 +13,13 @@ Version under test: `1.0.0`. Use fixture groups and clusters with fixed, recorde
 | Custom-code SAST finding with no CVE | Exploitation `none` unless specific evidence; no borrowed EPSS. |
 | Secret reported valid, in a public repository | At least `O` by local rule. |
 | Organization policy supplied | Policy applied and cited instead of the default table. |
+| Lodash CVE, fix 4.17.21 within major 4, CI tests present | Route `fix-first`. |
+| Same CVE, fix requires a major upgrade | Route `validate` (or `defer-track` if `D`). |
+| Same CVE, no tests in CI | Route `validate`; the shortcut needs tests. |
+| Fixing version published 3 days ago, outcome `scheduled` | `fix-first` noted with the release-age concern, or wait until 14 days; outcome `O` records the trade-off. |
+| 30 clusters from one SAST rule, outcomes `S` and `D` | Route `sample-rule`, sample of 5 spread across files, including the top-ranked cluster. |
+| One `O` cluster from a high-volume rule | Route `validate`, not sampled. |
+| `D` SAST finding | Route `defer-track` with reassessment triggers; not sent to validation. |
 
 ## Scoring and release checks
 
